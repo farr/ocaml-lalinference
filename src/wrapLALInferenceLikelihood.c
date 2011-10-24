@@ -73,7 +73,13 @@ CAMLprim value wrapLALInferenceFreqDomainStudentTLogLikelihood(value options, va
   LALInferenceAddVariable(&LIparams, "declination", &dec, LALINFERENCE_REAL8_t, LALINFERENCE_PARAM_LINEAR);
 
   if (Tag_val(params) == 0) {
-    /* Non-spinning parameters---we're done.  Run with TaylorF2 template. */
+    /* Non-spinning parameters.  Run with TaylorF2 template. */
+    LALPNOrder PhaseOrder=LAL_PNORDER_THREE_POINT_FIVE;
+    Approximant approx = TaylorF2;
+
+    LALInferenceAddVariable(&LIparams, "LAL_PNORDER", &PhaseOrder, LALINFERENCE_UINT4_t, LALINFERENCE_PARAM_FIXED);
+    LALInferenceAddVariable(&LIparams, "LAL_APPROXIMANT", &approx, LALINFERENCE_UINT4_t, LALINFERENCE_PARAM_FIXED);
+
     logL = LALInferenceFreqDomainStudentTLogLikelihood(&LIparams, data, &LALInferenceTemplateLAL);
   } else {
     fprintf(stderr, "ERROR: spinning templates not implemented yet!\n");
