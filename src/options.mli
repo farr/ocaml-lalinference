@@ -43,3 +43,6 @@ val srate : float ref
 (** The seed to use for generating random detector noise, if the
     caches are ["LALLIGO"] or ["LALVirgo"]. *)
 val dataseed : int ref
+
+(** An option list suitable for {!Arg.parse} *)
+val options : (string * Arg.spec * string) list

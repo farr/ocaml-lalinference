@@ -46,5 +46,8 @@ val log_p_nonspin : non_spin_params -> float
 (** Log of the spinning part of the prior. *)
 val log_p_spin : spin_params -> float
 
+(** Log prior handling both spinning and non-spinning cases. *)
+val logp : params -> float
+
 (** The likelihood of a given set of parameters. *)
 val log_likelihood : logl_options -> Read_data.li_ifo_data -> params -> float

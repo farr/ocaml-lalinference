@@ -1,5 +1,5 @@
 open Options
-open Stats
+open Oli_stats
 
 type non_spin_params = {
   m1 : float;
@@ -103,5 +103,9 @@ let log_p_spin {a1=a1; a2=a2; cos_tilt1 = ct1; cos_tilt2 = ct2; phi1 = phi1; phi
     neg_infinity
   else
     0.0
+
+let logp = function 
+  | NonSpinning ns -> log_p_nonspin ns
+  | Spinning (ns, s) -> (log_p_nonspin ns) +. (log_p_spin s)
   
 external log_likelihood : logl_options -> Read_data.li_ifo_data -> params -> float = "wrapLALInferenceFreqDomainStudentTLogLikelihood"

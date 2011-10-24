@@ -6,6 +6,7 @@ let laldir = "-L/Users/farr/lscsoft/master/lib"
 let lalinc = "-I/Users/farr/lscsoft/master/include"
 
 let oUnit_dir = "/Users/farr/Documents/code/oUnit"
+let mcmc_dir = "/Users/farr/Documents/code/mcmc-ocaml/_build"
   
 let _ = dispatch begin function
   | After_rules ->
@@ -20,6 +21,7 @@ let _ = dispatch begin function
     
     ocaml_lib "ocamllalinference";
     ocaml_lib ~extern:true ~dir:oUnit_dir "oUnit";
+    ocaml_lib ~extern:true ~dir:mcmc_dir "mcmc";
     
     dep  ["link"; "ocaml"; "use_ocamllalinference"] ["libwraplalinference.a"];
   | _ -> ()
