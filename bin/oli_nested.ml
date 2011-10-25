@@ -71,8 +71,12 @@ let logl data =
     (NonSpinning 
        {m1 = 5.0; m2 = 4.0; dist = infinity; cos_i = 0.0; ra = 3.14; sin_dec = 0.0; phi = 3.14; psi = 1.5; 
         time = !Options.trigtime}) in 
+    Printf.fprintf stderr "Zero Log(L) = %g\n%!" zero_logl;
     fun params -> 
-      (Parameters.log_likelihood {nseg = nseg ()} data params) -. zero_logl
+      if logp params > neg_infinity then 
+        (Parameters.log_likelihood {nseg = nseg ()} data params) -. zero_logl
+      else
+        neg_infinity
         
 let observer = 
   let last_logl = ref neg_infinity in 
@@ -80,7 +84,8 @@ let observer =
       let logl = dead_pt.Mcmc.like_prior.Mcmc.log_likelihood in 
         if logl -. !last_logl > 1.0 then begin
           last_logl := logl;
-          Read_write.write_sample to_array stdout dead_pt
+          Read_write.write_sample to_array stdout dead_pt;
+          flush stdout            
         end
           
 

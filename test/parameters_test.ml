@@ -5,7 +5,7 @@ open Read_data
 
 let test_basic_logl () = 
   let p = NonSpinning({m1 = 5.0; m2 = 4.0; dist = 50.0; cos_i = -0.25;
-                       psi = 2.6; phi = 5.8; time = 968654558.0; ra = 2.9;
+                       psi = 2.6; phi = 5.8; time = 0.0; ra = 2.9;
                        sin_dec = 0.2}) in 
     trigtime := 968654558.0;
     psdstart := 968654560.0;
@@ -18,5 +18,12 @@ let test_basic_logl () =
       assert_bool "log(L) too small" (logL > -49000.0);
       assert_bool "log(L) too big" (logL < -48000.0)
 
+let test_positive_mass () = 
+  for i = 1 to 100000 do 
+    let p = draw_non_spinning_prior () in 
+      assert_bool "prior draw outside prior bounds" (log_p_nonspin p > neg_infinity)
+  done
+
 let tests = "parameters.ml tests" >:::
-  ["log(L) with known parameters test" >:: test_basic_logl]
+  ["log(L) with known parameters test" >:: test_basic_logl;
+   "positive mass prior draws" >:: test_positive_mass]

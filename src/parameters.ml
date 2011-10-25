@@ -50,7 +50,7 @@ let rec draw_dist () =
       dist
 
 let time_bounds () = 
-  (!trigtime -. !one_sided_dt, !trigtime +. !one_sided_dt)
+  (~-. !one_sided_dt, !one_sided_dt)
 
 let draw_non_spinning_prior () =
   let (tmin,tmax) = time_bounds () in 
@@ -108,4 +108,10 @@ let logp = function
   | NonSpinning ns -> log_p_nonspin ns
   | Spinning (ns, s) -> (log_p_nonspin ns) +. (log_p_spin s)
   
-external log_likelihood : logl_options -> Read_data.li_ifo_data -> params -> float = "wrapLALInferenceFreqDomainStudentTLogLikelihood"
+external ext_log_likelihood : logl_options -> Read_data.li_ifo_data -> params -> float = "wrapLALInferenceFreqDomainStudentTLogLikelihood"
+
+let log_likelihood opts data = function 
+  | NonSpinning ns -> 
+    ext_log_likelihood opts data (NonSpinning {ns with time = ns.time +. !trigtime})
+  | Spinning (ns, s) -> 
+    ext_log_likelihood opts data (Spinning ({ns with time = ns.time +. !trigtime}, s))
