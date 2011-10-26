@@ -26,51 +26,6 @@ let nonspin_header = "m1 m2 dist cosiota psi phi_orb time ra sindec"
 let spin_header = "a1 a2 costilt1 costilt2 phiL1 phiL2"
 let logl_header = "logl logprior"
 
-let nonspin_to_array {m1=m1; m2=m2; dist=dist; cos_i=cos_i; psi=psi; phi=phi; time=time; ra=ra; sin_dec=sin_dec} = 
-  let a = Array.make 9 0.0 in 
-    a.(0) <- m1;
-    a.(1) <- m2;
-    a.(2) <- dist;
-    a.(3) <- cos_i;
-    a.(4) <- psi;
-    a.(5) <- phi;
-    a.(6) <- time;
-    a.(7) <- ra;
-    a.(8) <- sin_dec;
-    a
-
-let array_to_nonspin a = 
-  {m1=a.(0); m2=a.(1); dist=a.(2); cos_i=a.(3); psi=a.(4); phi=a.(5); time=a.(6); ra=a.(7); sin_dec=a.(8)}
-
-let spin_to_array {a1=a1; a2=a2; cos_tilt1=cos_tilt1; phi1=phi1; cos_tilt2=cos_tilt2; phi2=phi2} = 
-  let a = Array.make 6 0.0 in 
-    a.(0) <- a1;
-    a.(1) <- a2;
-    a.(2) <- cos_tilt1;
-    a.(3) <- phi1;
-    a.(4) <- cos_tilt2;
-    a.(5) <- phi2;
-    a
-
-let array_to_spin a = 
-  {a1=a.(0); a2=a.(1); cos_tilt1=a.(2); phi1=a.(3); cos_tilt2=a.(4); phi2=a.(5)}
-
-let to_array = function 
-  | NonSpinning nospin -> 
-    nonspin_to_array nospin
-  | Spinning(nospin,spin) -> 
-    Array.append (nonspin_to_array nospin) (spin_to_array spin)
-
-let from_array a = 
-  if Array.length a = 9 then 
-    NonSpinning (array_to_nonspin a)
-  else if Array.length a = 15 then 
-    let ns = array_to_nonspin (Array.sub a 0 9) and 
-        s = array_to_spin (Array.sub a 9 6) in 
-      Spinning(ns,s)
-  else
-    raise (Invalid_argument "Oli_nested.from_array")
-
 let nseg () = 
   int_of_float (!Options.psdlen /. !Options.seglen +. 0.5)
 

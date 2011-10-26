@@ -51,3 +51,9 @@ val logp : params -> float
 
 (** The likelihood of a given set of parameters. *)
 val log_likelihood : logl_options -> Read_data.li_ifo_data -> params -> float
+
+(** Convert params to an array. *)
+val to_array : params -> float array
+
+(** Convert a float array to params. *)
+val from_array : float array -> params
