@@ -6,6 +6,7 @@
 #include <caml/alloc.h>
 #include <caml/memory.h>
 #include <caml/custom.h>
+#include <caml/threads.h>
 
 static double dot(const double v[3], const double w[3]) {
   int i;
@@ -174,8 +175,10 @@ CAMLprim value wrapLALInferenceFreqDomainStudentTLogLikelihood(value options, va
     Approximant approx = TaylorF2;
 
     LALInferenceAddVariable(&LIparams, "LAL_APPROXIMANT", &approx, LALINFERENCE_UINT4_t, LALINFERENCE_PARAM_FIXED);
-
+    
+    caml_release_runtime_system();
     logL = LALInferenceFreqDomainStudentTLogLikelihood(&LIparams, data, &LALInferenceTemplateLAL);
+    caml_acquire_runtime_system();
   } else {
     double a1, a2, costilt1, costilt2, myphi1, myphi2, theta1, theta2, phi1, phi2;
     Approximant approx = SpinTaylorFrameless;
@@ -204,7 +207,9 @@ CAMLprim value wrapLALInferenceFreqDomainStudentTLogLikelihood(value options, va
     LALInferenceAddVariable(&LIparams, "theta_spin2", &theta2, LALINFERENCE_REAL8_t, LALINFERENCE_PARAM_LINEAR);
     LALInferenceAddVariable(&LIparams, "phi_spin2", &phi2, LALINFERENCE_REAL8_t, LALINFERENCE_PARAM_CIRCULAR);
 
+    caml_release_runtime_system();
     logL = LALInferenceFreqDomainStudentTLogLikelihood(&LIparams, data, &LALInferenceTemplateLALGenerateInspiral);
+    caml_acquire_runtime_system();
   }
 
   vlogL = caml_copy_double(logL);
