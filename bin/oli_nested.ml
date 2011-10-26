@@ -2,13 +2,15 @@ open Parameters
 
 let spinning = ref false
 let npost = ref 10000
+let nmcmc = ref 100
 
 let options = 
   Arg.align
     (Options.options @
        [("-spinning", Arg.Set spinning, " run with spinning templates");
         ("-seed", Arg.Int (fun s -> Random.init s), "S seed the OCaml RNG");
-        ("-npost", Arg.Set_int npost, "N number of posterior samples to output")])
+        ("-npost", Arg.Set_int npost, "N number of posterior samples to output");
+        ("-nmcmc", Arg.Set_int nmcmc, "N number of MCMC steps to choose next live point")])
 
 let draw_prior () = 
   let nonspin = draw_non_spinning_prior () in 
@@ -94,7 +96,7 @@ let _ =
   Arg.parse options (fun _ -> ()) "oli_nested.native OPTION ...";
   let data = Read_data.read_data (Read_data.make_read_data_options ()) in 
   let logl = logl data in 
-  let nested_out = Nested.nested_evidence ~observer:observer to_array from_array draw_prior logl logp in 
+  let nested_out = Nested.nested_evidence ~observer:observer ~nmcmc:(!nmcmc) to_array from_array draw_prior logl logp in 
   let post = Nested.posterior_samples !npost nested_out in 
   let nout = open_out "nested.dat" and 
       pout = open_out "posterior.dat" in 
@@ -102,4 +104,3 @@ let _ =
     Read_write.write to_array pout post;
     close_out nout;
     close_out pout
-    

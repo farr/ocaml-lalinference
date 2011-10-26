@@ -80,6 +80,7 @@ let log_p_nonspin {m1=m1; m2=m2; dist=dist; cos_i=cos_i; psi=psi; phi=phi; time=
       (tmin,tmax) = time_bounds () in 
     if m1 < !mmin || m1 > !mmax ||
       m2 < !mmin || m2 > !mmax || 
+      m2 > m1 ||
       mtot < !mtotmin || mtot > !mtotmax ||
       dist < !dmin || dist > !dmax ||
       cos_i < -1.0 || cos_i > 1.0 ||
