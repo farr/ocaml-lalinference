@@ -20,6 +20,10 @@ let draw_prior () =
     else
       NonSpinning nonspin
 
+let nonspin_header = "m1 m2 dist cosiota psi phi_orb time ra sindec"
+let spin_header = "a1 a2 costilt1 costilt2 phiL1 phiL2"
+let logl_header = "logl logprior"
+
 let nonspin_to_array {m1=m1; m2=m2; dist=dist; cos_i=cos_i; psi=psi; phi=phi; time=time; ra=ra; sin_dec=sin_dec} = 
   let a = Array.make 9 0.0 in 
     a.(0) <- m1;
@@ -100,6 +104,9 @@ let _ =
   let post = Nested.posterior_samples !npost nested_out in 
   let nout = open_out "nested.dat" and 
       pout = open_out "posterior.dat" in 
+    Printf.fprintf pout "%s " nonspin_header;
+    if !spinning then Printf.fprintf pout "%s " spin_header;
+    Printf.fprintf pout "%s\n" logl_header;
     Read_write.write_nested to_array nout nested_out;
     Read_write.write to_array pout post;
     close_out nout;
