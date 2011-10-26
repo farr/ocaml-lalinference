@@ -1,0 +1,12 @@
+true: debug
+
+<test> or <src> or <bin> : include
+
+<test/*.{ml,mli,native,byte}> : use_ocamllalinference, use_unix, use_oUnit
+<bin/*.{ml,mli,native,byte}> : use_ocamllalinference
+
+"libwraplalinference.a" : use_lalinference
+
+<src/*.c> : use_lalinference
+
+<**/*.{ml,mli,native,byte}> : use_mcmc
