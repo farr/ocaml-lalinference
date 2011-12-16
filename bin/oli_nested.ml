@@ -42,18 +42,26 @@ let logl data =
         neg_infinity
         
 let observer = 
-  let last_logl = ref neg_infinity in 
+  let last_logl = ref neg_infinity and 
+      last_nacc = ref 0 and 
+      last_nrej = ref 0 in
     fun dead_pt -> 
       let logl = dead_pt.Mcmc.like_prior.Mcmc.log_likelihood in 
         if logl -. !last_logl > 1.0 then begin
           let (nacc,nrej) = Mcmc.get_counters () in 
           let ntot = nacc + nrej in 
-          let accept_rate = (float_of_int nacc)/.(float_of_int ntot) in 
-          last_logl := logl;
-          Read_write.write_sample to_array stdout dead_pt;
-          Printf.fprintf stderr "Current accept rate = %g\n" accept_rate;
-          flush stdout;
-          flush stderr
+          let inc_acc = nacc - !last_nacc and 
+              inc_rej = nrej - !last_nrej in 
+          let inc_tot = inc_acc + inc_rej in
+          let accept_rate = (float_of_int nacc)/.(float_of_int ntot) and 
+              inc_accept_rate = (float_of_int inc_acc) /. (float_of_int inc_tot) in
+            last_nacc := nacc;
+            last_nrej := nrej;
+            last_logl := logl;
+            Read_write.write_sample to_array stdout dead_pt;
+            Printf.fprintf stderr "Current incremental accept rate = %g, average rate = %g\n" inc_accept_rate accept_rate;
+            flush stdout;
+            flush stderr
         end
           
 
