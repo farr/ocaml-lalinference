@@ -46,9 +46,14 @@ let observer =
     fun dead_pt -> 
       let logl = dead_pt.Mcmc.like_prior.Mcmc.log_likelihood in 
         if logl -. !last_logl > 1.0 then begin
+          let (nacc,nrej) = Mcmc.get_counters () in 
+          let ntot = nacc + nrej in 
+          let accept_rate = (float_of_int nacc)/.(float_of_int ntot) in 
           last_logl := logl;
           Read_write.write_sample to_array stdout dead_pt;
-          flush stdout            
+          Printf.fprintf stderr "Current accept rate = %g\n" accept_rate;
+          flush stdout;
+          flush stderr
         end
           
 
