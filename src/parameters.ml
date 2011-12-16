@@ -161,3 +161,27 @@ let from_array a =
       Spinning(ns,s)
   else
     raise (Invalid_argument "Parameters.from_array")
+
+let spin_to_observer_angles = function 
+  | NonSpinning _ -> 
+    raise (Invalid_argument "spin_to_observer_angles: non-spinning parameters.")
+  | Spinning({cos_i = cos_i}, {cos_tilt1 = ct1; cos_tilt2 = ct2; phi1 = phi1; phi2 = phi2}) -> 
+    let sin_i = sqrt (1.0 -. cos_i*.cos_i) in 
+    let zhat = [|sin_i; 0.0; cos_i|] in (* zhat is along l *)
+    let xhat = [| ~-.cos_i; 0.0; sin_i|] in (* N = [|0.0; 0.0; 1.0]; xhat = N - (N*z)z *)
+    let yhat = [|zhat.(1)*.xhat.(2) -. zhat.(2)*.xhat.(1);
+                 zhat.(2)*.xhat.(0) -. zhat.(0)*.xhat.(2);
+                 zhat.(0)*.xhat.(1) -. zhat.(1)*.xhat.(0)|] in 
+    let cp1 = cos phi1 and sp1 = sin phi1 and 
+        cp2 = cos phi2 and sp2 = sin phi2 in 
+    let st1 = sqrt (1.0 -. ct1*.ct1) and st2 = sqrt (1.0 -. ct2*.ct2) in 
+    let s1 = Array.make 3 0.0 and s2 = Array.make 3 0.0 in 
+      for i = 0 to 2 do 
+        s1.(i) <- cp1*.st1*.xhat.(i) +. sp1*.st1*.yhat.(i) +. ct1*.zhat.(i);
+        s2.(i) <- cp2*.st2*.xhat.(i) +. sp2*.st2*.yhat.(i) +. ct2*.zhat.(i)
+      done;
+      let theta1 = acos (s1.(2) /. sqrt (s1.(0)*.s1.(0) +. s1.(1)*.s1.(1) +. s1.(2)*.s1.(2))) and 
+          theta2 = acos (s2.(2) /. sqrt (s2.(0)*.s2.(0) +. s2.(1)*.s2.(1) +. s2.(2)*.s2.(2))) and 
+          phi1 = atan2 s1.(1) s1.(0) and 
+          phi2 = atan2 s2.(1) s2.(0) in 
+        ([|theta1; phi1|], [|theta2; phi2|])

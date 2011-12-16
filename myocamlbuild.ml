@@ -14,7 +14,7 @@ let _ = dispatch begin function
       (S[A laldir; A "-llal"; A "-llalinference"]);
     
     flag ["c"; "compile"; "use_lalinference"]
-      (S[A"-ccopt"; A lalinc; A"-ccopt"; A"-g"]);
+      (S[A"-ccopt"; A lalinc; A"-ccopt"; A"-g"; A"-ccopt"; A"-std=c99"]);
     
     flag ["link"; "ocaml"; "use_ocamllalinference"]
       (S[A"-ccopt"; A laldir; A"-cclib"; A "-llal"; A"-cclib"; A"-llalinference"]);

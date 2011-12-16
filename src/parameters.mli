@@ -57,3 +57,8 @@ val to_array : params -> float array
 
 (** Convert a float array to params. *)
 val from_array : float array -> params
+
+(** Returns [(\[|theta1; phi1|\], \[|theta2; phi2|\])], where [theta1]
+    and [phi1] are the colatitude and longitude of spin 1 in the frame
+    where the LOS is the z-axis and L lies in the x-z plane. *)
+val spin_to_observer_angles : params -> (float array * float array)
